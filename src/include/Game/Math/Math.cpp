@@ -67,6 +67,7 @@ float Math::origin(Point2Df A, float slope) {
 
 Point2Df Math::slopeAndOrigin(Point2Df A, Point2Df B) {
     float slope = Math::slope(A, B);
+    //std::cout << slope << std::endl;
     return Point2Df(slope, origin(A, slope));
 }
 

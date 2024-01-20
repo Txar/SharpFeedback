@@ -19,14 +19,28 @@ Line2Df Line2Df::getRotated(float angle) {
 }
 
 Point2Df Line2Df::intersect(Line2Df &b) {
-    Point2Df slopeAndOriginA = Math::slopeAndOrigin(A(), B());
-    Point2Df slopeAndOriginB = Math::slopeAndOrigin(b.A(), b.B());
+    Point2Df A1 = A(), B1 = B().sum(A1), A2 = b.A(), B2 = b.B().sum(A2);
+
+    Point2Df helper;
+    if (B1.x < A1.x) {
+        helper = A1;
+        A1 = B1;
+        B1 = helper;
+    }
+    if (B2.x < A2.x) {
+        helper = A2;
+        A2 = B2;
+        B2 = helper;
+    }
+
+    Point2Df slopeAndOriginA = Math::slopeAndOrigin(A1, B1);
+    Point2Df slopeAndOriginB = Math::slopeAndOrigin(A2, B2);
+    std::cout << slopeAndOriginA.x << " " << slopeAndOriginA.y << std::endl;
 
     float i = Math::intersection(slopeAndOriginA.x, slopeAndOriginA.x, slopeAndOriginB.x, slopeAndOriginB.y);
     Point2Df inter(i, slopeAndOriginA.x*i + slopeAndOriginA.y);
     std::cout << inter.x << " " << inter.y << std::endl;
 
-    Point2Df A1 = A(), B1 = B().sum(A1), A2 = b.A(), B2 = b.B().sum(A2);
 
     if (inter.between(A1, B1) 
     && inter.between(A2, B2)) {

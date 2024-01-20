@@ -26,6 +26,11 @@ int main(){
     //f.line = ShF::Line2Df(0, 0, 10, 50);
     //faces.push_back(f);
 
+    ShF::Line2Df l1(0, 0, 3, 3);
+    ShF::Line2Df l2(3, 0, -3, 3);
+    ShF::Point2Df a = l1.intersect(l2);
+    std::cout << a.x << " " << a.y << a.exists << std::endl;
+
     /*
 
     ShF::Point2Df pointA(250, 250), pointB(250, 50);
@@ -33,6 +38,8 @@ int main(){
     std::cout << pointB.x << " " << pointB.y << std::endl;
 
     */   
+    /*
+
     ShF::Line2Df l(400, 300, 0, -50);
     ShF::Line2Df l2;
 
@@ -82,17 +89,6 @@ int main(){
         //b.rotateAround(a, ShF::Math::degreesToRadians(5));
         window.draw(camera.render(faces));
 
-        /*
-        for (int angle = 0; angle < 800; angle++) {
-            l2 = l.getRotated(ShF::Math::degreesToRadians(camera.rotation) + FOV*(float)angle/800 - FOV/2.0);
-            l2.x = 400 + camera.x;
-            l2.y = 300 + camera.y;
-            line[0].position = {l2.x, l2.y};
-            line[1].position = {l2.x + l2.x2, l2.y + l2.y2};
-            window.draw(line);
-        }
-        */
-
         
         l2 = l.getRotated(ShF::Math::degreesToRadians(camera.rotation) + (FOV / 2.0));
         l2.x = 400 + camera.x;
@@ -105,6 +101,7 @@ int main(){
         
         window.display();
     }
+    */
     
     return 0;
 }

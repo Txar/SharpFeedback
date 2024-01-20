@@ -3,7 +3,7 @@ BN=ProjectName#build name
 CFLAGS=-O3 -Wall
 INCLUDEPATH =-I./src/include/
 UNAME_S := $(shell uname -s)
-SRC = $(wildcard ./src/*.cpp)
+SRC = $(wildcard ./src/*.cpp) $(wildcard ./src/include/Game/Math/*.cpp) $(wildcard ./src/include/Game/*.cpp) $(wildcard ./src/include/Game/Graphics/*.cpp)
 all: game
 
 game:

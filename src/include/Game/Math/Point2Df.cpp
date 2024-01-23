@@ -1,6 +1,7 @@
 #include "Point2Df.hpp"
 #include "Math.hpp"
 #include <algorithm>
+#include "iostream"
 
 namespace ShF {
 
@@ -26,8 +27,13 @@ Point2Df Point2Df::sum(Point2Df b) {
     return Point2Df(x + b.x, y + b.y);
 }
 
+Point2Df Point2Df::sub(Point2Df b) {
+    return Point2Df(x - b.x, y - b.y);
+}
+
 bool Point2Df::between(Point2Df a, Point2Df b) {
-    return x > std::min(a.x, b.x) && y > std::min(a.y, b.y) && x < std::max(a.x, b.x) && y < std::max(a.y, b.y);
+    //printf("%i %i %i %i\n", x > std::min(a.x, b.x), y > std::min(a.y, b.y), x < std::max(a.x, b.x), y < std::max(a.y, b.y));
+    return x >= std::min(a.x, b.x) && y >= std::min(a.y, b.y) && x <= std::max(a.x, b.x) && y <= std::max(a.y, b.y);
 }
 
 }

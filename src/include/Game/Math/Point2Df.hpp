@@ -15,6 +15,7 @@ class Point2Df {
         void rotateAround(Point2Df &b, float angle);
         Point2Df getRotated(Point2Df &b, float angle);
         Point2Df sum(Point2Df b);
+        Point2Df sub(Point2Df b);
         bool between(Point2Df a, Point2Df b);
 };
 

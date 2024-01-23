@@ -10,6 +10,8 @@ class Face {
     public:
         TextureBoundingRect *texture;
         Line2Df line;
+        sf::Color color;
+        bool noTexture;
 };
 
 }

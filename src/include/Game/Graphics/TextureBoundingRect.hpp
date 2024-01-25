@@ -8,7 +8,7 @@ class TextureBoundingRect {
         int x, y;
         int width, height;
 
-        int positionFromFraction(float f);
+        int positionFromFraction(double f);
 };
 
 }

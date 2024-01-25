@@ -8,13 +8,13 @@ namespace ShF {
 
 class Camera {
     public:
-        float x, y;
-        float rotation;
+        double x, y;
+        double rotation;
         sf::RenderTexture buffer;
         sf::Texture texture;
 
         Camera();
-        sf::Sprite render(std::vector<Face> &faces);
+        sf::Sprite render(std::vector<Face> &faces, double FOV);
 };
 
 }

@@ -1,18 +1,19 @@
 #include <iostream>
 #include "Math.hpp"
-#include "Point2Df.hpp"
+#include "Point2Dd.hpp"
+#include "Line2Dd.hpp"
 
 namespace ShF {
 
-const float Math::PI = 3.14159265;
+const double Math::PI = 3.14159265;
 
-float* Math::sinTable = new float[(int)(Math::PI * 1000)];
+double* Math::sinTable = new double[(int)(Math::PI * 1000)];
 
-float Math::degreesToRadians(float deg) {
+double Math::degreesToRadians(double deg) {
     return deg * PI / 180.0;
 }
 
-float Math::fastSin(float x) {
+double Math::fastSin(double x) {
     return sin(x); //turns out this is faster... nice -_-
     if (x == 0) return 0.0;
 
@@ -35,43 +36,43 @@ float Math::fastSin(float x) {
     }
 }
 
-float Math::fastCos(float x) {
+double Math::fastCos(double x) {
     return cos(x);
     //return sin(x + (PI / 2.0));
 }
 
-float Math::fastSqrt(float x) {
+double Math::fastSqrt(double x) {
     return sqrtf(x);
 }
 
 void Math::initialize() {
     delete sinTable;
-    sinTable = new float[(int)(PI * 1000.0)];
+    sinTable = new double[(int)(PI * 1000.0)];
 
     for (int i = 0; i < PI * 1000; i++) {
         sinTable[i] = sin(i / 1000.0);
     }
 }
 
-float Math::slope(Point2Df A, Point2Df B) {
+double Math::slope(Point2Dd A, Point2Dd B) {
     return (B.y - A.y) / (B.x - A.x);
 }
 
-float Math::origin(Point2Df A, Point2Df B) {
+double Math::origin(Point2Dd A, Point2Dd B) {
     return A.y - A.x * slope(A, B);
 }
 
-float Math::origin(Point2Df A, float slope) {
+double Math::origin(Point2Dd A, double slope) {
     return A.y - A.x * slope;
 }
 
-Point2Df Math::slopeAndOrigin(Point2Df A, Point2Df B) {
-    float slope = Math::slope(A, B);
+Point2Dd Math::slopeAndOrigin(Point2Dd A, Point2Dd B) {
+    double slope = Math::slope(A, B);
     //std::cout << slope << std::endl;
-    return Point2Df(slope, origin(A, slope));
+    return Point2Dd(slope, origin(A, slope));
 }
 
-float Math::intersection(float a, float b, float c, float d) {
+double Math::intersection(double a, double b, double c, double d) {
     return (d - b) / (a - c);
 }
 

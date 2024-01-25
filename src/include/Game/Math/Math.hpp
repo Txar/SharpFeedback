@@ -3,7 +3,7 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include "Point2Df.hpp"
+#include "Point2Dd.hpp"
 
 namespace ShF {
 
@@ -11,17 +11,17 @@ class Math {
     private:
 
     public:
-        static float* sinTable;
-        static const float PI;
-        static float degreesToRadians(float deg);
-        static float fastSin(float x);
-        static float fastCos(float x);
-        static float fastSqrt(float x); //lol
-        static float slope(Point2Df A, Point2Df B);
-        static float origin(Point2Df A, Point2Df B);
-        static float origin(Point2Df A, float slope);
-        static Point2Df slopeAndOrigin(Point2Df A, Point2Df B);
-        static float intersection(float a, float b, float c, float d);
+        static double* sinTable;
+        static const double PI;
+        static double degreesToRadians(double deg);
+        static double fastSin(double x);
+        static double fastCos(double x);
+        static double fastSqrt(double x); //lol
+        static double slope(Point2Dd A, Point2Dd B);
+        static double origin(Point2Dd A, Point2Dd B);
+        static double origin(Point2Dd A, double slope);
+        static Point2Dd slopeAndOrigin(Point2Dd A, Point2Dd B);
+        static double intersection(double a, double b, double c, double d);
         static void initialize();
 };
 

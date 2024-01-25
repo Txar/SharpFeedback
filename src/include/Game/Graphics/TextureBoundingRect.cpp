@@ -2,7 +2,7 @@
 
 namespace ShF {
 
-int TextureBoundingRect::positionFromFraction(float f) {
+int TextureBoundingRect::positionFromFraction(double f) {
     return x + (int)(width*f)%width;
 }
 

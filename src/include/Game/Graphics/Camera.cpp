@@ -7,25 +7,25 @@ namespace ShF {
 
 
 struct DrawFace {
-    float distance;
-    Point2Df point;
+    double distance;
+    Point2Dd point;
     Face *face;
 
-    DrawFace(Point2Df &point, float distance, Face *face) : distance(distance), face(face) {
+    DrawFace(Point2Dd &point, double distance, Face *face) : distance(distance), face(face) {
         this->point.x = point.x;
         this->point.y = point.y;
     };
     DrawFace() {};
 };
 
-sf::Sprite Camera::render(std::vector<Face> &faces) {
-    Line2Df ray(x, y, 0, 500);
-    Line2Df pathTo;
-    Point2Df p(false);
+sf::Sprite Camera::render(std::vector<Face> &faces, double FOV) {
+    Line2Dd initialRay(x, y, 0, 5000);
+    Line2Dd ray;
+    Point2Dd center(x, y);
+    Line2Dd pathTo;
+    Point2Dd p(false);
 
-    float FOV = Math::PI / 3.0;
-    ray.rotate(ShF::Math::degreesToRadians(rotation) - (FOV / 2.0));
-    //if (ray.intersect(faces[0].line).exists) buffer.clear(sf::Color::White);
+    initialRay.rotate(ShF::Math::degreesToRadians(rotation) - (FOV / 2.0));
     buffer.clear(sf::Color::Black);
 
     int lineHeight;
@@ -36,17 +36,19 @@ sf::Sprite Camera::render(std::vector<Face> &faces) {
 
     int screenWidth = 1200;
     int screenHeight = 720;
-    
-    float angleStep = (float)FOV/screenWidth;
-    for (int angle = 0; angle < screenWidth; angle++) {
-        ray.rotate(angleStep);
 
+    double cameraPlaneDistance = (screenWidth/2)*tan((Math::PI/2.0) - FOV/2);
+    
+    double angleStep = (double)FOV/screenWidth;
+    for (int angle = 0; angle < screenWidth; angle++) {
+        double actualAngle = atan((angle - (screenWidth / 2))/cameraPlaneDistance);
+        ray = initialRay.getRotated(actualAngle);
         std::vector<DrawFace> facesDistances;
         for (int i = 0; i < (int)faces.size(); i++) {
             p = ray.intersect(faces.at(i).line);
             if (p.exists) {
-                pathTo = Line2Df(ray.A(), p, true);
-                facesDistances.push_back(DrawFace(p, pathTo.length(), &faces.at(i)));
+                pathTo = Line2Dd(ray.A(), p, true);
+                facesDistances.push_back(DrawFace(p, pathTo.length()*Math::fastCos(actualAngle), &faces.at(i)));
             }
         }
         bool done;
@@ -55,23 +57,17 @@ sf::Sprite Camera::render(std::vector<Face> &faces) {
             for (int i = 1; i < (int)facesDistances.size(); i++) {
                 if (facesDistances[i-1].distance < facesDistances[i].distance) {
                     done = false;
-                    //std::cout << "Swapped!" << facesDistances[i-1].distance << " " << facesDistances[i].distance << "\n";
-                    DrawFace a = facesDistances[i];
-                    facesDistances[i] = facesDistances[i - 1];
-                    facesDistances[i - 1] = a;
-                    //std::iter_swap(facesDistances.begin() + i, facesDistances.begin() + i - 1);
+                    std::iter_swap(facesDistances.begin() + i, facesDistances.begin() + i - 1);
                 }
             }
         } while (!done);
 
         for (int ind = 0; ind < (int)facesDistances.size(); ind++) {
             DrawFace &i = facesDistances[ind];
-            //float ratio1 = i.distance*Math::fastCos(angleStep*angle - (FOV / 2.0));
-            float ratio1 = i.distance*Math::fastCos(angleStep*angle - (FOV / 2.0));
-            lineHeight = (int)(screenHeight - ratio1);
+            lineHeight = (i.face->texture->height/i.distance)*cameraPlaneDistance;
             if (lineHeight <= 0) continue;
-            line[0].position = {(float) angle, (float)(screenHeight - lineHeight) / 2};
-            line[1].position = {(float) angle, (float)lineHeight};
+            line[0].position = {(double) angle, (double)(screenHeight - lineHeight) / 2};
+            line[1].position = {(double) angle, (double)line[0].position.y + lineHeight};
             if (line[0].position.y > line[1].position.y) continue;
             
             if (i.face->noTexture) {
@@ -81,9 +77,9 @@ sf::Sprite Camera::render(std::vector<Face> &faces) {
             } else {
                 sf::Sprite s(texture);
                 s.setPosition(line[0].position);
-                Line2Df textureDistance(i.face->line.A(), p.sub(i.face->line.A()));
-                float height = line[1].position.y - line[0].position.y;
-                float ratio = (float)height/i.face->texture->height;
+                Line2Dd textureDistance(i.face->line.A(), p.sub(i.face->line.A()));
+                double height = line[1].position.y - line[0].position.y;
+                double ratio = (double)lineHeight/i.face->texture->height;
                 s.setTextureRect(
                     sf::IntRect(
                         i.face->texture->positionFromFraction(textureDistance.length() / i.face->texture->width),
@@ -98,13 +94,7 @@ sf::Sprite Camera::render(std::vector<Face> &faces) {
         }
     }
 
-
-
-    
-
     buffer.display();
-    
-
     return sf::Sprite(buffer.getTexture());
 }
 

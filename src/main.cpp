@@ -1,8 +1,8 @@
 #include <iostream>
 #include "SFML/Graphics.hpp"
 #include "Game/Math/Math.hpp"
-#include "Game/Math/Point2Df.hpp"
-#include "Game/Math/Line2Df.hpp"
+#include "Game/Math/Point2Dd.hpp"
+#include "Game/Math/Line2Dd.hpp"
 #include "Game/Graphics/Camera.hpp"
 
 int main(){
@@ -15,8 +15,8 @@ int main(){
 
     sf::RenderWindow window({1200, 720}, "TEST");
     ShF::Camera camera;
-    camera.x = 10;
-    camera.y = 20;
+    camera.x = 100;
+    camera.y = 100;
 
     ShF::TextureBoundingRect bricks;
     bricks.height = 64;
@@ -28,15 +28,25 @@ int main(){
     ShF::Face f;
     f.texture = &bricks;
     
-    f.line = ShF::Line2Df(0, 0, 500, 25);
+    f.line = ShF::Line2Dd(50, 50, 2000, 0);
     f.color = sf::Color::Green;
     f.noTexture = false;
-    //f.noTexture = true;
     faces.push_back(f);
-    /*
-    f.line = ShF::Line2Df(0, 0, 10, 50);
+    //f.noTexture = true;
+    
+    f.line = ShF::Line2Dd(50, 50, 0.1, 250);
     f.color = sf::Color::Red;
     faces.push_back(f);
+
+    f.line = ShF::Line2Dd(250, 50, 0.1, 250);
+    f.color = sf::Color::Blue;
+    faces.push_back(f);
+
+    f.line = ShF::Line2Dd(50, 300, 200, 0);
+    f.color = sf::Color::Yellow;
+    f.noTexture = false;
+    faces.push_back(f);
+    /*
     f.line = ShF::Line2Df(50, 20, 10, 50);
     faces.push_back(f);
     f.line = ShF::Line2Df(20, 20, 50, 0);
@@ -62,8 +72,8 @@ int main(){
     */   
     
 
-    ShF::Line2Df l(400, 300, 0, 50);
-    ShF::Line2Df l2;
+    ShF::Line2Dd l(400, 300, 0, 50);
+    ShF::Line2Dd l2;
 
     sf::VertexArray line(sf::LineStrip, 2);
     line[0].position = {l.x, l.y};
@@ -80,6 +90,8 @@ int main(){
 
     window.setFramerateLimit(60);
 
+    double FOV = ShF::Math::degreesToRadians(1);
+    int frame = 0;
     while (window.isOpen())
     {
         sf::Event event;
@@ -89,36 +101,41 @@ int main(){
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
             camera.rotation -= 1.5;
+            //std::cout << camera.rotation << std::endl;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
             camera.rotation += 1.5;
+            //std::cout << camera.rotation << std::endl;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            ShF::Point2Df p = ShF::Line2Df(camera.x, camera.y, 0, -1).getRotated(ShF::Math::degreesToRadians(camera.rotation)).B();
-            camera.x += p.x;
-            camera.y += p.y;
+            ShF::Point2Dd p = ShF::Line2Dd(camera.x, camera.y, 0, -1).getRotated(ShF::Math::degreesToRadians(camera.rotation)).B();
+            camera.x += 2*p.x;
+            camera.y += 2*p.y;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            ShF::Point2Df p = ShF::Line2Df(camera.x, camera.y, 0, 1).getRotated(ShF::Math::degreesToRadians(camera.rotation)).B();
-            camera.x += p.x;
-            camera.y += p.y;
+            ShF::Point2Dd p = ShF::Line2Dd(camera.x, camera.y, 0, 1).getRotated(ShF::Math::degreesToRadians(camera.rotation)).B();
+            camera.x += 2*p.x;
+            camera.y += 2*p.y;
             //camera.y -= 1;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            ShF::Point2Df p = ShF::Line2Df(camera.x, camera.y, 1, 0).getRotated(ShF::Math::degreesToRadians(camera.rotation)).B();
-            camera.x -= p.x;
-            camera.y -= p.y;
+            ShF::Point2Dd p = ShF::Line2Dd(camera.x, camera.y, 1, 0).getRotated(ShF::Math::degreesToRadians(camera.rotation)).B();
+            camera.x -= 2*p.x;
+            camera.y -= 2*p.y;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            ShF::Point2Df p = ShF::Line2Df(camera.x, camera.y, 1, 0).getRotated(ShF::Math::degreesToRadians(camera.rotation)).B();
-            camera.x += p.x;
-            camera.y += p.y;
+            ShF::Point2Dd p = ShF::Line2Dd(camera.x, camera.y, 1, 0).getRotated(ShF::Math::degreesToRadians(camera.rotation)).B();
+            camera.x += 2*p.x;
+            camera.y += 2*p.y;
         }
         //t = b.getRotated(a, ShF::Math::degreesToRadians(angle));
 
         window.clear({0, 0, 0});
         //b.rotateAround(a, ShF::Math::degreesToRadians(5));
-        window.draw(camera.render(faces));
+        //FOV = ShF::Math::degreesToRadians(20 + 180*ShF::Math::fastSin(ShF::Math::PI*frame/60));
+        window.draw(camera.render(faces, FOV));
+
+
 
         /*
         l2 = l.getRotated(ShF::Math::degreesToRadians(camera.rotation) + (FOV / 2.0));
@@ -142,6 +159,8 @@ int main(){
         */
         
         window.display();
+        frame++;
+        if (frame == 60) frame = 0;
     }
     
     return 0;

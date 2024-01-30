@@ -6,6 +6,7 @@
 namespace ShF {
 
 const double Math::PI = 3.14159265;
+const double Math::DEG_TO_RAD = PI / 180.0;
 
 double* Math::sinTable = new double[(int)(Math::PI * 1000)];
 
@@ -74,6 +75,10 @@ Point2Dd Math::slopeAndOrigin(Point2Dd A, Point2Dd B) {
 
 double Math::intersection(double a, double b, double c, double d) {
     return (d - b) / (a - c);
+}
+
+double Math::lerp(double a, double b, float t) {
+    return a*(1-t) + b*t;
 }
 
 }

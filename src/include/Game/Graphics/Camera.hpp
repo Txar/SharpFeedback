@@ -9,12 +9,14 @@ namespace ShF {
 class Camera {
     public:
         double x, y;
-        double rotation;
+        double yaw;
         sf::RenderTexture buffer;
         sf::Texture texture;
+        double z, pitch;
 
         Camera();
         sf::Sprite render(std::vector<Face> &faces, double FOV);
+        sf::Sprite floors(std::vector<Face> &faces, double FOV);
 };
 
 }

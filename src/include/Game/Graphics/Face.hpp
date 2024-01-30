@@ -11,6 +11,8 @@ class Face {
         TextureBoundingRect *texture;
         Line2Dd line;
         sf::Color color;
+        int height;
+        int z;
         bool noTexture;
 };
 

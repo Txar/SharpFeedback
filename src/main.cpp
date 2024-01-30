@@ -17,6 +17,8 @@ int main(){
     ShF::Camera camera;
     camera.x = 100;
     camera.y = 100;
+    camera.z = 0;
+    camera.pitch = 0;
 
     ShF::TextureBoundingRect bricks;
     bricks.height = 64;
@@ -28,30 +30,56 @@ int main(){
     ShF::Face f;
     f.texture = &bricks;
     
-    f.line = ShF::Line2Dd(50, 50, 2000, 0);
+    f.line = ShF::Line2Dd(2050, 50, -2000, 0);
     f.color = sf::Color::Green;
     f.noTexture = false;
+    f.z = 0;
+    f.height = 64;
     faces.push_back(f);
+    f.z = 0;
     //f.noTexture = true;
-    
-    f.line = ShF::Line2Dd(50, 50, 0.1, 250);
+    f.line = ShF::Line2Dd(50, 300, 0.1, -250);
     f.color = sf::Color::Red;
     faces.push_back(f);
-
-    f.line = ShF::Line2Dd(250, 50, 0.1, 250);
+    f.z = 0;
+    f.line = ShF::Line2Dd(250, 300, 0.1, -250);
     f.color = sf::Color::Blue;
     faces.push_back(f);
-
-    f.line = ShF::Line2Dd(50, 300, 200, 0);
+    f.z = 0;
+    f.height = 16;
+    f.line = ShF::Line2Dd(250, 300, -200, 0);
     f.color = sf::Color::Yellow;
     f.noTexture = false;
+
+    ShF::TextureBoundingRect bricksButSmall;
+    bricksButSmall.x = 0;
+    bricksButSmall.y = 0;
+    bricksButSmall.width = 64;
+    bricksButSmall.height = 16;
+
+    f.texture = &bricksButSmall;
+    faces.push_back(f);
+
+    f.z = 0;
     faces.push_back(f);
     /*
     f.line = ShF::Line2Df(50, 20, 10, 50);
     faces.push_back(f);
     f.line = ShF::Line2Df(20, 20, 50, 0);
     */
-    faces.push_back(f);
+    //faces.push_back(f);
+
+    ShF::TextureBoundingRect tiles;
+    tiles.x = 64;
+    tiles.y = 0;
+    tiles.width = 64;
+    tiles.height = 64;
+    
+    std::vector<ShF::Face> floors;
+    f.z = 0;
+    f.texture = &tiles;
+    f.line = ShF::Line2Dd(50, 50, 50, 50);
+    floors.push_back(f);
 
 
     f.line.x += 400;
@@ -76,13 +104,13 @@ int main(){
     ShF::Line2Dd l2;
 
     sf::VertexArray line(sf::LineStrip, 2);
-    line[0].position = {l.x, l.y};
+    line[0].position = {(float)l.x, (float)l.y};
     line[0].color = sf::Color::Red;
     line[1].color = sf::Color::Red;
 
     sf::VertexArray line2(sf::LineStrip, 2);
-    line2[0].position = {400 + faces[0].line.x, 300 + faces[0].line.y};
-    line2[1].position = {400 + faces[0].line.x + faces[0].line.x2, 300 + faces[0].line.y + faces[0].line.y2};
+    line2[0].position = {400 + (float) faces[0].line.x, 300 + (float) faces[0].line.y};
+    line2[1].position = {400 + (float) (faces[0].line.x + faces[0].line.x2), 300 + (float) (faces[0].line.y + faces[0].line.y2)};
     line2[0].color = sf::Color::Green;
     line2[1].color = sf::Color::Green;
 
@@ -90,41 +118,70 @@ int main(){
 
     window.setFramerateLimit(60);
 
-    double FOV = ShF::Math::degreesToRadians(1);
+    double FOV = ShF::Math::degreesToRadians(100);
     int frame = 0;
+    float upVelocity = 0;
     while (window.isOpen())
     {
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) window.close();
+            if (event.type == sf::Event::KeyPressed) {
+                switch (event.key.code) {
+                    case (sf::Keyboard::Space):
+                        if (camera.z == 0) {
+                            upVelocity = 5;
+                        }
+                        break;
+                    case (sf::Keyboard::Escape):
+                        window.close();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        camera.z += upVelocity;
+        if (camera.z <= 0) {
+            upVelocity = 0;
+            camera.z = 0;
+        }
+        else {
+            upVelocity -= 0.25;
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-            camera.rotation -= 1.5;
+            camera.yaw -= 1.5;
             //std::cout << camera.rotation << std::endl;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            camera.rotation += 1.5;
+            camera.yaw += 1.5;
             //std::cout << camera.rotation << std::endl;
         }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+            camera.pitch += 24;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+            camera.pitch -= 24;
+        }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            ShF::Point2Dd p = ShF::Line2Dd(camera.x, camera.y, 0, -1).getRotated(ShF::Math::degreesToRadians(camera.rotation)).B();
-            camera.x += 2*p.x;
-            camera.y += 2*p.y;
+            ShF::Point2Dd p = ShF::Line2Dd(camera.x, camera.y, 0, 1).getRotated(ShF::Math::degreesToRadians(camera.yaw)).B();
+            camera.x -= 2*p.x;
+            camera.y -= 2*p.y;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            ShF::Point2Dd p = ShF::Line2Dd(camera.x, camera.y, 0, 1).getRotated(ShF::Math::degreesToRadians(camera.rotation)).B();
+            ShF::Point2Dd p = ShF::Line2Dd(camera.x, camera.y, 0, 1).getRotated(ShF::Math::degreesToRadians(camera.yaw)).B();
             camera.x += 2*p.x;
             camera.y += 2*p.y;
             //camera.y -= 1;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            ShF::Point2Dd p = ShF::Line2Dd(camera.x, camera.y, 1, 0).getRotated(ShF::Math::degreesToRadians(camera.rotation)).B();
+            ShF::Point2Dd p = ShF::Line2Dd(camera.x, camera.y, 1, 0).getRotated(ShF::Math::degreesToRadians(camera.yaw)).B();
             camera.x -= 2*p.x;
             camera.y -= 2*p.y;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            ShF::Point2Dd p = ShF::Line2Dd(camera.x, camera.y, 1, 0).getRotated(ShF::Math::degreesToRadians(camera.rotation)).B();
+            ShF::Point2Dd p = ShF::Line2Dd(camera.x, camera.y, 1, 0).getRotated(ShF::Math::degreesToRadians(camera.yaw)).B();
             camera.x += 2*p.x;
             camera.y += 2*p.y;
         }
